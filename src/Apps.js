@@ -13,7 +13,10 @@ const Apps = () => {
       .then((mvs) => setUsers(mvs));
   };
 
-  useEffect(() => getdata(), []);
+  useEffect(() =>{ 
+    getdata()
+  if(editing !== false)  editRow() 
+},[]);
 
   const initialFormState = { id: "", first_name: "", email: "", phone_no: "" };
 
@@ -30,9 +33,10 @@ const Apps = () => {
   };
 
   const deleteUser = (id) => {
-    fetch(`https://5f252b05c85de20016292e83.mockapi.io/api/v1/employee/${id}`, {
-      method: "DELETE",
-    }).then(() => getdata());
+    
+     fetch(`https://5f252b05c85de20016292e83.mockapi.io/api/v1/employee/${id}`, {
+       method: "DELETE",
+     }).then(() => getdata());
   };
 
   const editRow = (user) => {

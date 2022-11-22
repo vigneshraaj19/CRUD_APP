@@ -20,10 +20,14 @@ const EditUserForm = (props) => {
   const handleClickOpen = () => {
     setOpen(true);
   };
+  const handleClickOpenN = ()=>{
+    setOpen(true);
+  }
 
   const handleClose = () => {
     setOpen(false);
     resetAddUser();
+    props.setEditing(false)
   };
 
   const [user, setUser] = useState(
@@ -52,6 +56,11 @@ const EditUserForm = (props) => {
     resetAddUser();
     setOpen(false);
   };
+  useEffect(() =>{
+    if(props.editing === true){
+      handleClickOpenN()
+    }
+  },[props.editing])
 
   return (
     <div>
