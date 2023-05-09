@@ -7,41 +7,56 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Box from "@mui/material/Box";
 import "./App.css";
-import {  useParams } from "react-router-dom";
+import {  useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
-const EditUserForm = () => {
-  const id=useParams()._id;
+const AddUserForm = () => {
+    const navigate = useNavigate();
   const [users, setUsers] = useState([]);
 
   const[name,setname]=useState("")
   const[email,setemail]=useState("")
   const[phone,setphone]=useState("")
   const[role,setrole]=useState("")
-  console.log(id)
+  const [selectedFile, setSelectedFile] = useState(null);
+  
+const Submitform=()=>{
     
-   const getdata=()=>{
-    axios.get(`http://localhost:7000/crud/updatedata/${id}`)
-    .then((item)=>{
-      console.log(item)
-      // console.log(JSON.stringify(item.data.data))
-    })
+    const newdata={
+        name:name,
+        email:email,
+        phone:phone,
+        role:role,
+        image:selectedFile
+      };     
+      console.log(selectedFile)
+
+      fetch(`http://localhost:7000/crud/createdata`, {
+        method: "POST",body: JSON.stringify(newdata),
+        headers: {"Content-Type": "application/json",}
+      }).then((item) =>{ 
+        console.log(item)
+        navigate('/userlist')});
 }
 
-useEffect(()=>{
-    getdata()
-},[])
+const onFormSubmit=(e)=>{
+    e.preventDefault();
+    const formData = new FormData();
 
-
-    const userdata=()=>{
-      setname(users.name)
-      setemail(users.email)
-      setphone(users.phone)
-      setrole(users.role)
-    }
-    userdata();
-
-
+    formData.append('myImage',e.target.files[0]);
+    const config = {
+        headers: {
+            'content-type': 'multipart/form-data'
+        }
+    };
+    setSelectedFile(e.target.files[0])
+    axios.post("http://localhost:7000/crud/upload",formData,config)
+        .then((response) => {
+            alert("The file is successfully uploaded");
+        }).catch((error) => {
+    });
+}
+   
   return (
     <div>
       <div>
@@ -52,7 +67,7 @@ useEffect(()=>{
                 type="text"
                 name="name"
                 placeholder="Enter Name"
-                value={name || " "}
+         
                 onChange={(e)=>setname(e.target.value)}
               
               />
@@ -61,7 +76,7 @@ useEffect(()=>{
                 type="text"
                 name="email"
                 placeholder="Enter Email"
-                value={email || " "}      
+               
                 onChange={(e)=>setemail(e.target.value)}       
               />
               <label>Phone Number</label>
@@ -69,7 +84,7 @@ useEffect(()=>{
                 type="text"
                 name="phone_no"
                 placeholder="Enter Phone Number"
-                value={phone || " "}
+             
                 onChange={(e)=>setphone(e.target.value)}
               
               />
@@ -78,9 +93,19 @@ useEffect(()=>{
                 type="text"
                 name="role"
                 placeholder="Enter Role"
-                value={role || " "}
-                onChange={(e)=>setrole(e.target.value)}               
+                onChange={(e)=>setrole(e.target.value)}
+                      
               />
+              <label>Image</label>
+
+            <input
+          type="file"
+          onChange={(e) =>
+            { 
+               
+                onFormSubmit(e)}}
+        />
+             
             </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -91,8 +116,8 @@ useEffect(()=>{
             >
               Cancel
             </Button>
-            <Button   size="small" variant="contained">
-             Save
+            <Button onClick={Submitform}  size="small" variant="contained">
+             Add
             </Button>
           </DialogActions>
       </div>
@@ -100,4 +125,4 @@ useEffect(()=>{
   );
 };
 
-export default EditUserForm;
+export default AddUserForm;
